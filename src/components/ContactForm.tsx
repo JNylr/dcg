@@ -1,9 +1,12 @@
+"use client";
+
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Send, CheckCircle, User, Mail, MessageSquare, Gamepad2 } from 'lucide-react';
 
 export function ContactForm() {
-  const sheetEndpoint = import.meta.env.VITE_SHEET_WEBAPP_URL || '/api/register';
+  const sheetEndpoint =
+    process.env.NEXT_PUBLIC_SHEET_ENDPOINT?.trim() || '/api/register';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
