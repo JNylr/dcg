@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from 'motion/react';
 import { Gamepad2, MapPin, Calendar } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';

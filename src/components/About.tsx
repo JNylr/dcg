@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from 'motion/react';
 import { Trophy, Users, Zap, Gift, MonitorPlay, ShoppingBag } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
