@@ -52,9 +52,15 @@
     build: {
       target: 'esnext',
       outDir: 'build',
+  },
+  server: {
+    port: 3000,
+    open: true,
+    proxy: {
+      '/api': {
+        target: process.env.API_PROXY_TARGET || 'http://localhost:8788',
+        changeOrigin: true,
+      },
     },
-    server: {
-      port: 3000,
-      open: true,
-    },
-  });
+  },
+}); 

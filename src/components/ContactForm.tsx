@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Send, CheckCircle, User, Mail, MessageSquare, Gamepad2 } from 'lucide-react';
 
 export function ContactForm() {
+  const sheetEndpoint = import.meta.env.VITE_SHEET_WEBAPP_URL || '/api/register';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,13 +13,37 @@ export function ContactForm() {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
+    if (!sheetEndpoint) {
+      setErrorMessage('Submission is not configured yet. Please try again later.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const response = await fetch(sheetEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          submittedAt: new Date().toISOString(),
+          source: 'doncaster-gaming-event',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with ${response.status}`);
+      }
+
+      setSubmitted(true);
       setFormData({
         name: '',
         email: '',
@@ -27,7 +52,16 @@ export function ContactForm() {
         experience: '',
         message: '',
       });
-    }, 3000);
+
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 3000);
+    } catch (err) {
+      console.error('Form submission failed', err);
+      setErrorMessage('We could not submit your registration. Please try again in a moment.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -185,7 +219,7 @@ export function ContactForm() {
             {/* Submit Button */}
             <motion.button
               type="submit"
-              disabled={submitted}
+              disabled={isSubmitting || submitted}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={`w-full py-4 rounded-lg flex items-center justify-center gap-3 transition-all duration-300 ${
@@ -202,10 +236,14 @@ export function ContactForm() {
               ) : (
                 <>
                   <Send className="w-5 h-5" />
-                  Submit Registration
+                  {isSubmitting ? 'Submitting...' : 'Submit Registration'}
                 </>
               )}
             </motion.button>
+
+            {errorMessage && (
+              <p className="text-red-400 text-center text-sm">{errorMessage}</p>
+            )}
 
             <p className="text-gray-500 text-center text-sm">
               * Required fields. We respect your privacy and won't share your information.
