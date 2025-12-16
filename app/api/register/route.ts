@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 const SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const SHEET_RANGE = process.env.GOOGLE_SHEET_RANGE || "Sheet1!A:H";
 const CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
-const PRIVATE_KEY = (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n");
+const PRIVATE_KEY = normalizePrivateKey(process.env.GOOGLE_PRIVATE_KEY || "");
 const SOURCE_TAG = process.env.SOURCE_TAG || "doncaster-gaming-event";
 const ALLOWED_ORIGIN = process.env.CORS_ORIGIN || "*";
 
@@ -170,4 +170,13 @@ function base64UrlEncode(value: string) {
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
+}
+
+function normalizePrivateKey(key: string) {
+  return key
+    .replace(/\\n/g, "\n")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n");
 }
