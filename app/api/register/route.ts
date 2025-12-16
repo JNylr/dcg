@@ -164,7 +164,7 @@ function createJwt() {
   return `${unsignedToken}.${signature}`;
 }
 
-function base64UrlEncode(value: string) {
+function base64UrlEncode(value: string | Buffer) {
   return Buffer.from(value)
     .toString("base64")
     .replace(/\+/g, "-")
